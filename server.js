@@ -4,8 +4,10 @@ const session = require('express-session');
 const path = require('path');
 const db = require('./src/config/db');
 
-// Import our new auth routes
+// Import our routes
+const galleryRoutes = require('./src/routes/gallery');
 const authRoutes = require('./src/routes/auth');
+const mediaRoutes = require('./src/routes/media');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -16,6 +18,9 @@ app.set('views', path.join(__dirname, 'src', 'views'));
 
 // Serve static files
 app.use(express.static(path.join(__dirname, 'public')));
+
+// Expose the uploads folder so the browser can read videos, subtitles, and thumbnails
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Parse URL-encoded bodies (for our login form)
 app.use(express.urlencoded({ extended: true }));
@@ -33,23 +38,17 @@ app.use(session({
 
 // Register Routes
 app.use('/', authRoutes);
+app.use('/', mediaRoutes);
+app.use('/', galleryRoutes);
 
-// A simple test route to verify logins
+// Update the root route: Everyone goes straight to the Gallery!
 app.get('/', (req, res) => {
     if (req.session.userId) {
-        // If they are logged in, show their info
-        res.send(`
-            <h1>Welcome to the Media App!</h1>
-            <p>Logged in as: <strong>${req.session.username}</strong></p>
-            <p>Role: <strong>${req.session.role}</strong></p>
-            <a href="/logout">Logout</a>
-        `);
+        // If logged in (admin or friend), go to the Netflix showroom
+        return res.redirect('/gallery'); 
     } else {
-        // If not logged in, ask them to log in
-        res.send(`
-            <h1>Media Share App is running!</h1>
-            <p><a href="/login">Click here to Login</a></p>
-        `);
+        // If not logged in, go to the bouncer
+        res.redirect('/login');
     }
 });
 

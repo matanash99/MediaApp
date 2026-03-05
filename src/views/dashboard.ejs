@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Media Share</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .dashboard-container { max-width: 900px; margin: 2rem auto; padding: 2rem; background-color: #1e1e1e; border-radius: 10px; }
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; padding-bottom: 1rem; margin-bottom: 2rem; }
+        .upload-section { background-color: #2a2a2a; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem; border: 1px dashed #4a90e2; }
+        .form-row { display: flex; gap: 1rem; margin-bottom: 1rem; }
+        .form-row .form-group { flex: 1; margin-bottom: 0; }
+        .video-list { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+        .video-list th, .video-list td { padding: 1rem; text-align: left; border-bottom: 1px solid #333; font-size: 0.9rem; }
+        .btn-danger { background-color: #ff4d4d; color: white; border: none; padding: 0.5rem 1rem; border-radius: 5px; cursor: pointer; }
+        .btn-danger:hover { background-color: #cc0000; }
+        .badge { background-color: #ffb84d; color: #000; padding: 2px 6px; border-radius: 4px; font-size: 0.8rem; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard-container">
+        <div class="header">
+            <h2>System Dashboard</h2>
+            <div>
+                <span>Welcome, <strong><%= user.username %></strong></span>
+                <a href="/logout" class="btn" style="margin-left: 1rem; text-decoration: none; padding: 0.5rem 1rem;">Logout</a>
+            </div>
+        </div>
+
+        <div class="upload-section">
+            <h3>Upload New Media</h3>
+            <form action="/dashboard/upload" method="POST" enctype="multipart/form-data">
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="title">Title (Episode or Movie Name)</label>
+                        <input type="text" id="title" name="title" required placeholder="e.g., Pilot">
+                    </div>
+                    <div class="form-group">
+                        <label for="series_name">Series Name (Optional)</label>
+                        <input type="text" id="series_name" name="series_name" placeholder="e.g., A Knight of the Seven Kingdoms">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="season_number">Season #</label>
+                        <input type="number" id="season_number" name="season_number" min="1">
+                    </div>
+                    <div class="form-group">
+                        <label for="episode_number">Episode #</label>
+                        <input type="number" id="episode_number" name="episode_number" min="1">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="video">Video File (.mp4, .webm)</label>
+                        <input type="file" id="video" name="video" accept=".mp4,.webm" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="subtitle">Subtitle (.vtt)</label>
+                        <input type="file" id="subtitle" name="subtitle" accept=".vtt">
+                    </div>
+                    <div class="form-group">
+                        <label for="thumbnail">Cover Image (.jpg, .png)</label>
+                        <input type="file" id="thumbnail" name="thumbnail" accept="image/*">
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-top: 1rem;">
+                    <label style="display: flex; align-items: center; cursor: pointer; color: #fff;">
+                        <input type="checkbox" name="is_recommended" style="width: auto; margin-right: 10px; transform: scale(1.5);">
+                        Set as Admin's Recommendation of the Week (Hero Banner)
+                    </label>
+                </div>
+
+                <button type="submit" class="btn" style="margin-top: 1rem;">Upload to Server</button>
+            </form>
+        </div>
+
+        <h3>Media Library</h3>
+        <table class="video-list">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Series Context</th>
+                    <th>Files</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if (videos.length > 0) { %>
+                    <% videos.forEach(video => { %>
+                        <tr>
+                            <td>
+                                <%= video.title %>
+                                <% if (video.is_recommended) { %> <span class="badge">HERO</span> <% } %>
+                            </td>
+                            <td>
+                                <% if (video.series_name) { %>
+                                    <%= video.series_name %> (S<%= video.season_number %>E<%= video.episode_number %>)
+                                <% } else { %>
+                                    Standalone Movie
+                                <% } %>
+                            </td>
+                            <td style="color: #888;">
+                                Vid: Yes <br>
+                                Sub: <%= video.subtitle_path ? 'Yes' : 'No' %> <br>
+                                Img: <%= video.thumbnail_path ? 'Yes' : 'No' %>
+                            </td>
+                            <td><%= new Date(video.upload_date).toLocaleDateString() %></td>
+                            <td>
+                                <div style="display: flex; gap: 0.5rem;">
+                                    <% if (!video.is_recommended) { %>
+                                        <form action="/dashboard/recommend/<%= video.id %>" method="POST">
+                                            <button type="submit" class="btn" style="background-color: #ffb84d; color: black; padding: 0.5rem 1rem;">Set as Hero</button>
+                                        </form>
+                                    <% } %>
+
+                                    <form action="/dashboard/delete/<%= video.id %>" method="POST" onsubmit="return confirm('Delete this file permanently?');">
+                                        <button type="submit" class="btn-danger">Delete</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    <% }) %>
+                <% } else { %>
+                    <tr>
+                        <td colspan="5" style="text-align: center; color: #aaa;">No media uploaded yet.</td>
+                    </tr>
+                <% } %>
+            </tbody>
+        </table>
+    </div>
+
+</body>
+</html>

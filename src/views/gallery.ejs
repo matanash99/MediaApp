@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gallery - Media Share</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        /* Force body to top-to-bottom layout */
+        body { margin: 0; background-color: #141414; color: white; display: block; height: auto; }
+        
+        /* Consistent Navbar */
+        .navbar { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 4%; background: #000; width: 100%; box-sizing: border-box; }
+        .navbar h2 { margin: 0; color: #e50914; font-size: 1.8rem; }
+        .nav-links { display: flex; align-items: center; }
+        .nav-links a { color: white; text-decoration: none; margin-left: 1.5rem; font-weight: bold; }
+
+        /* Hero Banner */
+        .hero { height: 70vh; background-size: cover; background-position: center; position: relative; display: flex; align-items: flex-end; padding: 0 4% 4rem 4%; }
+        .hero-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(to right, rgba(20,20,20,0.9) 0%, rgba(20,20,20,0) 60%), linear-gradient(to top, #141414 0%, transparent 20%); }
+        .hero-content { position: relative; z-index: 2; max-width: 50%; }
+        .hero-title { font-size: 3.5rem; margin: 0 0 1rem 0; }
+        .hero-badge { background-color: #e50914; padding: 0.3rem 0.8rem; border-radius: 3px; font-weight: bold; margin-bottom: 1rem; display: inline-block; }
+        .btn-play { background-color: white; color: black; padding: 0.8rem 2rem; border-radius: 4px; text-decoration: none; font-weight: bold; font-size: 1.2rem; }
+
+        /* Media Rows */
+        .gallery-container { padding: 0 4% 4rem 4%; margin-top: -3rem; position: relative; z-index: 3; }
+        .media-row { margin-bottom: 3rem; }
+        .row-title { font-size: 1.4rem; margin-bottom: 1rem; color: #e5e5e5; }
+        .row-slider { display: flex; overflow-x: auto; gap: 1rem; padding-bottom: 1rem; scrollbar-width: none; }
+        
+        /* Media Cards */
+        .media-card { flex: 0 0 250px; border-radius: 5px; overflow: hidden; text-decoration: none; color: white; background-color: #222; }
+        .card-img { width: 100%; height: 140px; object-fit: cover; background-color: #333; }
+        .card-info { padding: 0.8rem; }
+        .card-title { margin: 0; font-size: 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .card-meta { font-size: 0.8rem; color: #aaa; margin-top: 0.3rem; }
+    </style>
+</head>
+<body>
+
+    <div class="navbar">
+        <h2>MEDIA SHARE</h2>
+        <div class="nav-links">
+            <% if (user.role === 'admin') { %>
+                <a href="/dashboard">Admin Dashboard</a>
+            <% } %>
+            <a href="/logout">Logout (<%= user.username %>)</a>
+        </div>
+    </div>
+
+    <% if (heroVideo) { %>
+        <% 
+            const heroStyle = heroVideo.thumbnail_path 
+                ? `background-image: url('/uploads/thumbnails/${heroVideo.thumbnail_path}');` 
+                : 'background: linear-gradient(135deg, #2b2b2b 0%, #141414 100%);'; 
+        %>
+        <div class="hero" style="<%= heroStyle %>">
+            <div class="hero-overlay"></div>
+            <div class="hero-content">
+                <div class="hero-badge">Admin's Pick of the Week</div>
+                <h1 class="hero-title"><%= heroVideo.series_name ? heroVideo.series_name : heroVideo.title %></h1>
+                <% if (heroVideo.series_name) { %>
+                    <p style="font-size: 1.2rem; margin-bottom: 2rem;">Watch Season <%= heroVideo.season_number %>, Episode <%= heroVideo.episode_number %></p>
+                <% } %>
+                <a href="/watch/<%= heroVideo.id %>" class="btn-play">▶ Play Now</a>
+            </div>
+        </div>
+    <% } else { %>
+        <div class="hero" style="background-color: #141414; height: 20vh;"></div>
+    <% } %>
+
+    <div class="gallery-container">
+        <% if (movies.length > 0) { %>
+            <div class="media-row">
+                <h3 class="row-title">Movies & Standalones</h3>
+                <div class="row-slider">
+                    <% movies.forEach(movie => { %>
+                        <a href="/watch/<%= movie.id %>" class="media-card">
+                            <div class="card-img" style="<%= movie.thumbnail_path ? `background: url('/uploads/thumbnails/${movie.thumbnail_path}') no-repeat center/cover;` : 'background: #333;' %>"></div>
+                            <div class="card-info"><h4 class="card-title"><%= movie.title %></h4></div>
+                        </a>
+                    <% }) %>
+                </div>
+            </div>
+        <% } %>
+
+        <% for (const [seriesName, episodes] of Object.entries(seriesData)) { %>
+            <div class="media-row">
+                <h3 class="row-title"><%= seriesName %></h3>
+                <div class="row-slider">
+                    <% episodes.forEach(episode => { %>
+                        <a href="/watch/<%= episode.id %>" class="media-card">
+                            <div class="card-img" style="<%= episode.thumbnail_path ? `background: url('/uploads/thumbnails/${episode.thumbnail_path}') no-repeat center/cover;` : 'background: #333;' %>"></div>
+                            <div class="card-info">
+                                <h4 class="card-title"><%= episode.title %></h4>
+                                <div class="card-meta">S<%= episode.season_number %>:E<%= episode.episode_number %></div>
+                            </div>
+                        </a>
+                    <% }) %>
+                </div>
+            </div>
+        <% } %>
+    </div>
+</body>
+</html>

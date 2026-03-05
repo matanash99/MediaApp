@@ -10,24 +10,29 @@ const db = new sqlite3.Database(dbPath, (err) => {
     }
     console.log('Connected to the SQLite database.');
 
-    // 1. Create Users Table (Now with Roles)
+    // 1. Users Table (Unchanged)
     db.run(`CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         username TEXT UNIQUE NOT NULL,
         password TEXT NOT NULL,
-        role TEXT DEFAULT 'user' 
+        role TEXT DEFAULT 'user'
     )`);
 
-    // 2. Create Videos Table (Unchanged)
+    // 2. Videos Table (UPGRADED for Netflix-style UI)
     db.run(`CREATE TABLE IF NOT EXISTS videos (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         title TEXT NOT NULL,
+        series_name TEXT,
+        season_number INTEGER,
+        episode_number INTEGER,
         video_path TEXT NOT NULL,
         subtitle_path TEXT,
+        thumbnail_path TEXT,
+        is_recommended INTEGER DEFAULT 0,
         upload_date DATETIME DEFAULT CURRENT_TIMESTAMP
     )`);
 
-    // 3. Create Comments Table (Now linked to the actual user)
+    // 3. Comments Table (Unchanged)
     db.run(`CREATE TABLE IF NOT EXISTS comments (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         video_id INTEGER NOT NULL,
@@ -38,7 +43,7 @@ const db = new sqlite3.Database(dbPath, (err) => {
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     )`);
     
-    console.log('Database tables are ready with role-based access.');
+    console.log('Database tables are ready with Netflix-style hierarchy support.');
 });
 
 module.exports = db;
