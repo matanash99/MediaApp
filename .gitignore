@@ -1,0 +1,17 @@
+# --- Phase 1: Core Node.js ---
+node_modules/
+.env
+
+# --- Phase 2: Database ---
+# We ignore the actual database file so we don't overwrite it during deployments
+src/models/database.sqlite
+src/models/database.sqlite-journal
+
+# --- Phase 3: Media Uploads ---
+# We want to ignore the massive video files, but keep the folder structure
+uploads/*
+!uploads/.gitkeep
+
+# --- OS Generated Files ---
+.DS_Store
+Thumbs.db
