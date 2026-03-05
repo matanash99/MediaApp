@@ -1,10 +1,8 @@
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 
-// Set the path to save the SQLite file inside our models folder
 const dbPath = path.join(__dirname, '../models/database.sqlite');
 
-// Initialize the database connection
 const db = new sqlite3.Database(dbPath, (err) => {
     if (err) {
         console.error('Database connection error:', err.message);
@@ -12,14 +10,15 @@ const db = new sqlite3.Database(dbPath, (err) => {
     }
     console.log('Connected to the SQLite database.');
 
-    // 1. Create Users Table (For your Admin account)
+    // 1. Create Users Table (Now with Roles)
     db.run(`CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         username TEXT UNIQUE NOT NULL,
-        password TEXT NOT NULL
+        password TEXT NOT NULL,
+        role TEXT DEFAULT 'user' 
     )`);
 
-    // 2. Create Videos Table
+    // 2. Create Videos Table (Unchanged)
     db.run(`CREATE TABLE IF NOT EXISTS videos (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         title TEXT NOT NULL,
@@ -28,17 +27,18 @@ const db = new sqlite3.Database(dbPath, (err) => {
         upload_date DATETIME DEFAULT CURRENT_TIMESTAMP
     )`);
 
-    // 3. Create Comments Table
+    // 3. Create Comments Table (Now linked to the actual user)
     db.run(`CREATE TABLE IF NOT EXISTS comments (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         video_id INTEGER NOT NULL,
-        guest_name TEXT NOT NULL,
+        user_id INTEGER NOT NULL,
         comment_text TEXT NOT NULL,
         timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (video_id) REFERENCES videos(id) ON DELETE CASCADE
+        FOREIGN KEY (video_id) REFERENCES videos(id) ON DELETE CASCADE,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     )`);
     
-    console.log('Database tables are ready.');
+    console.log('Database tables are ready with role-based access.');
 });
 
 module.exports = db;
