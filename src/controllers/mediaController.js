@@ -13,38 +13,26 @@ exports.getDashboard = (req, res) => {
 };
 
 exports.uploadMedia = (req, res) => {
-    // Grab all our new form fields
     const { title, series_name, season_number, episode_number } = req.body;
-    const is_recommended = req.body.is_recommended === 'on' ? 1 : 0; // Checkbox logic
+    const is_recommended = req.body.is_recommended === 'on' ? 1 : 0;
     
-    if (!req.files || !req.files['video']) {
-        return res.status(400).send('Video file is required.');
-    }
+    if (!req.files || !req.files['video']) return res.status(400).send('Video is required.');
 
-    // Grab filenames from Multer
     const videoFile = req.files['video'][0].filename;
     const subtitleFile = req.files['subtitle'] ? req.files['subtitle'][0].filename : null;
     const thumbnailFile = req.files['thumbnail'] ? req.files['thumbnail'][0].filename : null;
+    const seriesPosterFile = req.files['series_poster'] ? req.files['series_poster'][0].filename : null;
 
-    // Helper function to insert the new video
     const insertVideo = () => {
-        const query = `INSERT INTO videos (title, series_name, season_number, episode_number, video_path, subtitle_path, thumbnail_path, is_recommended) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
-        db.run(query, [title, series_name || null, season_number || null, episode_number || null, videoFile, subtitleFile, thumbnailFile, is_recommended], function(err) {
-            if (err) {
-                console.error('Error saving to database:', err.message);
-                return res.status(500).send('Database error.');
-            }
-            console.log(`Successfully uploaded: ${title}`);
+        const query = `INSERT INTO videos (title, series_name, season_number, episode_number, video_path, subtitle_path, thumbnail_path, series_poster, is_recommended) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+        db.run(query, [title, series_name || null, season_number || null, episode_number || null, videoFile, subtitleFile, thumbnailFile, seriesPosterFile, is_recommended], function(err) {
+            if (err) return res.status(500).send('Database error.');
             res.redirect('/dashboard');
         });
     };
 
-    // If this is the new recommendation, clear the old one first
     if (is_recommended) {
-        db.run(`UPDATE videos SET is_recommended = 0`, [], (err) => {
-            if (err) console.error('Error clearing old recommendations:', err.message);
-            insertVideo();
-        });
+        db.run(`UPDATE videos SET is_recommended = 0`, [], (err) => insertVideo());
     } else {
         insertVideo();
     }

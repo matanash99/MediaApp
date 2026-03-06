@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Media Share</title>
+    <title>Register - Media Share</title>
     <style>
         body { margin: 0; background-color: #141414; color: white; display: flex; justify-content: center; align-items: center; height: 100vh; font-family: 'Segoe UI', 'Heebo', sans-serif; }
         .auth-container { background: rgba(0, 0, 0, 0.75); padding: 4rem; border-radius: 8px; width: 100%; max-width: 400px; box-sizing: border-box; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
@@ -21,18 +21,18 @@
 <body>
 
     <div class="auth-container">
-        <h1>Sign In</h1>
-        <form action="/login" method="POST">
+        <h1>Create Account</h1>
+        <form action="/register" method="POST">
             <div class="form-group">
-                <input type="text" name="username" placeholder="Username" required autocomplete="username">
+                <input type="text" name="username" placeholder="Choose a Username" required autocomplete="username">
             </div>
             <div class="form-group">
-                <input type="password" name="password" placeholder="Password" required autocomplete="current-password">
+                <input type="password" name="password" placeholder="Create a Password" required autocomplete="new-password">
             </div>
-            <button type="submit" class="btn-submit">Sign In</button>
+            <button type="submit" class="btn-submit">Register</button>
         </form>
         <div class="auth-links">
-            New to Media Share? <a href="/register">Sign up now.</a>
+            Already have an account? <a href="/login">Sign in here.</a>
         </div>
     </div>
 

@@ -2,7 +2,7 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
-// 1. Ensure our upload directories actually exist (Now including thumbnails)
+// 1. Ensure our upload directories actually exist
 const videoDir = path.join(__dirname, '../../uploads/videos');
 const subDir = path.join(__dirname, '../../uploads/subtitles');
 const thumbDir = path.join(__dirname, '../../uploads/thumbnails');
@@ -18,7 +18,8 @@ const storage = multer.diskStorage({
             cb(null, videoDir);
         } else if (file.fieldname === 'subtitle') {
             cb(null, subDir);
-        } else if (file.fieldname === 'thumbnail') {
+        } else if (file.fieldname === 'thumbnail' || file.fieldname === 'series_poster') {
+            // Both horizontal thumbnails and vertical posters live in the same folder
             cb(null, thumbDir);
         } else {
             cb(new Error('Unexpected file field'), '../../uploads/');
@@ -44,12 +45,12 @@ const fileFilter = (req, file, cb) => {
         } else {
             cb(new Error('Only .vtt format is allowed for subtitles!'), false);
         }
-    } else if (file.fieldname === 'thumbnail') {
+    } else if (file.fieldname === 'thumbnail' || file.fieldname === 'series_poster') {
         // Accept standard image formats for our UI posters
         if (file.mimetype.startsWith('image/')) {
             cb(null, true);
         } else {
-            cb(new Error('Only image files (JPG, PNG, WebP) are allowed for thumbnails!'), false);
+            cb(new Error('Only image files (JPG, PNG, WebP) are allowed for images!'), false);
         }
     }
 };

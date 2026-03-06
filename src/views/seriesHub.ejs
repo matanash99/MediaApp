@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= seriesName %> - Media Share</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        /* OVERRIDE GLOBAL FLEXBOX DEFAULTS */
+        body { margin: 0; background-color: #141414; color: white; display: block; height: auto; font-family: 'Segoe UI', 'Heebo', sans-serif; }
+        
+        /* NAVBAR */
+        .navbar { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 4%; background: #000; width: 100%; box-sizing: border-box; border-bottom: 1px solid #222; position: sticky; top: 0; z-index: 1000; }
+        .navbar h2 { margin: 0; color: #e50914; font-size: 1.8rem; letter-spacing: 1px; font-weight: bold; }
+        .nav-links { display: flex; align-items: center; }
+        .nav-links a { color: white; text-decoration: none; margin-left: 1.5rem; font-weight: bold; transition: color 0.2s; }
+        .nav-links a:hover { color: #e50914; }
+
+        /* HEADER */
+        .hub-header { padding: 4rem 4%; background: linear-gradient(to bottom, #222, #141414); border-bottom: 1px solid #333; }
+        .hub-header h1 { font-size: 3.5rem; margin: 0; text-shadow: 2px 2px 8px rgba(0,0,0,0.8); }
+        
+        /* SEASONS */
+        .season-section { padding: 2rem 4%; }
+        .season-section h2 { color: #e50914; margin-bottom: 1.5rem; border-bottom: 1px solid #333; padding-bottom: 0.5rem; display: inline-block; }
+        
+        /* EPISODE CARDS (16:9 Horizontal) */
+        /* EPISODE CARDS (16:9 Horizontal) */
+        .episode-row { display: flex; overflow-x: auto; gap: 20px; padding-bottom: 1.5rem; }
+        .episode-row::-webkit-scrollbar { height: 8px; }
+        .episode-row::-webkit-scrollbar-track { background: #1a1a1a; border-radius: 4px; }
+        .episode-row::-webkit-scrollbar-thumb { background: #444; border-radius: 4px; }
+        .episode-row::-webkit-scrollbar-thumb:hover { background: #e50914; }
+        
+        .ep-card { flex: 0 0 300px; background: #1a1a1a; border-radius: 6px; text-decoration: none; color: white; transition: transform 0.3s ease, box-shadow 0.3s ease; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.3); border: 1px solid transparent; }
+        .ep-card:hover { transform: scale(1.05); box-shadow: 0 10px 20px rgba(0,0,0,0.5); border: 1px solid #e50914; z-index: 5; }
+        .ep-img { width: 100%; height: 168px; background-size: cover; background-position: center; background-color: #333; }
+        .ep-info { padding: 15px; }
+        .ep-title { font-weight: bold; font-size: 1.1rem; margin-bottom: 5px; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .ep-meta { font-size: 0.85rem; color: #aaa; }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h2>MEDIA SHARE</h2>
+        <div class="nav-links">
+            <a href="/gallery">← Back to Gallery</a>
+        </div>
+    </div>
+
+    <div class="hub-header">
+        <h1><%= seriesName %></h1>
+        <p style="color: #aaa; margin-top: 10px; font-size: 1.1rem;">Select an episode to start watching.</p>
+    </div>
+
+    <% Object.keys(seasons).sort((a, b) => a - b).forEach(seasonNum => { %>
+        <div class="season-section">
+            <h2>Season <%= seasonNum %></h2>
+            <div class="episode-row">
+                <% seasons[seasonNum].sort((a, b) => a.episode_number - b.episode_number).forEach(ep => { %>
+                    <a href="/watch/<%= ep.id %>" class="ep-card">
+                        <div class="ep-img" style="<%= ep.thumbnail_path ? `background-image: url('/uploads/thumbnails/${ep.thumbnail_path}');` : '' %>"></div>
+                        <div class="ep-info">
+                            <div class="ep-title"><%= ep.title %></div>
+                            <div class="ep-meta">Episode <%= ep.episode_number %></div>
+                        </div>
+                    </a>
+                <% }) %>
+            </div>
+        </div>
+    <% }) %>
+    
+    <% if (Object.keys(seasons).length === 0) { %>
+        <div style="padding: 5rem 4%; color: #666;"><h3>No episodes uploaded yet.</h3></div>
+    <% } %>
+</body>
+</html>

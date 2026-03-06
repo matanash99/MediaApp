@@ -2,13 +2,13 @@ const express = require('express');
 const router = express.Router();
 const authController = require('../controllers/authController');
 
-// GET request to show the login page
-router.get('/login', authController.getLogin);
+// Frontend View Routes
+router.get('/login', (req, res) => res.render('login'));
+router.get('/register', (req, res) => res.render('register'));
 
-// POST request when the user clicks "Submit" on the login form
-router.post('/login', authController.postLogin);
-
-// GET request to log out
-router.get('/logout', authController.logout);
+// Backend Action Routes
+router.post('/login', authController.loginUser);
+router.post('/register', authController.registerUser);
+router.get('/logout', authController.logoutUser);
 
 module.exports = router;

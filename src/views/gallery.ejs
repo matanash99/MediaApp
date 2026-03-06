@@ -6,35 +6,41 @@
     <title>Gallery - Media Share</title>
     <link rel="stylesheet" href="/css/style.css">
     <style>
-        /* Force body to top-to-bottom layout */
-        body { margin: 0; background-color: #141414; color: white; display: block; height: auto; }
+        body { margin: 0; background-color: #141414; color: white; display: block; height: auto; font-family: 'Segoe UI', 'Heebo', sans-serif; }
         
-        /* Consistent Navbar */
-        .navbar { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 4%; background: #000; width: 100%; box-sizing: border-box; }
-        .navbar h2 { margin: 0; color: #e50914; font-size: 1.8rem; }
+        .navbar { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 4%; background: #000; width: 100%; box-sizing: border-box; position: sticky; top: 0; z-index: 1000; }
+        .navbar h2 { margin: 0; color: #e50914; font-size: 1.8rem; letter-spacing: 1px; }
         .nav-links { display: flex; align-items: center; }
-        .nav-links a { color: white; text-decoration: none; margin-left: 1.5rem; font-weight: bold; }
+        .nav-links a { color: white; text-decoration: none; margin-left: 1.5rem; font-weight: bold; transition: color 0.2s; }
+        .nav-links a:hover { color: #e50914; }
 
-        /* Hero Banner */
-        .hero { height: 70vh; background-size: cover; background-position: center; position: relative; display: flex; align-items: flex-end; padding: 0 4% 4rem 4%; }
-        .hero-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(to right, rgba(20,20,20,0.9) 0%, rgba(20,20,20,0) 60%), linear-gradient(to top, #141414 0%, transparent 20%); }
-        .hero-content { position: relative; z-index: 2; max-width: 50%; }
-        .hero-title { font-size: 3.5rem; margin: 0 0 1rem 0; }
-        .hero-badge { background-color: #e50914; padding: 0.3rem 0.8rem; border-radius: 3px; font-weight: bold; margin-bottom: 1rem; display: inline-block; }
-        .btn-play { background-color: white; color: black; padding: 0.8rem 2rem; border-radius: 4px; text-decoration: none; font-weight: bold; font-size: 1.2rem; }
+        .hero { height: 75vh; background-size: cover; background-position: center; position: relative; display: flex; align-items: flex-end; padding: 0 4% 5rem 4%; box-sizing: border-box; }
+        .hero-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(to right, rgba(20,20,20,0.9) 0%, rgba(20,20,20,0) 60%), linear-gradient(to top, #141414 0%, transparent 25%); }
+        .hero-content { position: relative; z-index: 2; max-width: 600px; }
+        .hero-title { font-size: 4rem; margin: 0 0 1rem 0; text-shadow: 2px 2px 10px rgba(0,0,0,0.8); }
+        .hero-badge { background-color: #e50914; padding: 0.4rem 1rem; border-radius: 3px; font-weight: bold; margin-bottom: 1.5rem; display: inline-block; text-transform: uppercase; font-size: 0.8rem; }
+        .btn-play { background-color: white; color: black; padding: 0.9rem 2.5rem; border-radius: 4px; text-decoration: none; font-weight: bold; font-size: 1.3rem; display: inline-flex; align-items: center; transition: transform 0.2s, background-color 0.2s; }
+        .btn-play:hover { background-color: rgba(255,255,255,0.8); transform: scale(1.05); }
 
-        /* Media Rows */
-        .gallery-container { padding: 0 4% 4rem 4%; margin-top: -3rem; position: relative; z-index: 3; }
-        .media-row { margin-bottom: 3rem; }
-        .row-title { font-size: 1.4rem; margin-bottom: 1rem; color: #e5e5e5; }
-        .row-slider { display: flex; overflow-x: auto; gap: 1rem; padding-bottom: 1rem; scrollbar-width: none; }
+        .gallery-container { padding: 0 4% 4rem 4%; margin-top: -5rem; position: relative; z-index: 3; }
+        .media-row { margin-bottom: 3.5rem; }
+        .row-title { font-size: 1.6rem; margin-bottom: 1.2rem; color: #e5e5e5; font-weight: 600; }
         
-        /* Media Cards */
-        .media-card { flex: 0 0 250px; border-radius: 5px; overflow: hidden; text-decoration: none; color: white; background-color: #222; }
-        .card-img { width: 100%; height: 140px; object-fit: cover; background-color: #333; }
-        .card-info { padding: 0.8rem; }
-        .card-title { margin: 0; font-size: 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .card-meta { font-size: 0.8rem; color: #aaa; margin-top: 0.3rem; }
+        /* THE FIX: Custom Scrollbars so you can actually scroll! */
+        .row-slider { display: flex; overflow-x: auto; gap: 1.2rem; padding-bottom: 1.5rem; }
+        .row-slider::-webkit-scrollbar { height: 8px; }
+        .row-slider::-webkit-scrollbar-track { background: #1a1a1a; border-radius: 4px; }
+        .row-slider::-webkit-scrollbar-thumb { background: #444; border-radius: 4px; }
+        .row-slider::-webkit-scrollbar-thumb:hover { background: #e50914; }
+        
+        /* Both TV and Movies now use this Vertical 4:5 ratio */
+        .series-card { flex: 0 0 220px; border-radius: 6px; overflow: hidden; text-decoration: none; color: white; background-color: #1a1a1a; transition: transform 0.3s ease, box-shadow 0.3s ease; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        .series-card:hover { transform: scale(1.08); z-index: 5; box-shadow: 0 10px 20px rgba(0,0,0,0.5); border: 1px solid #e50914; }
+        .series-img { width: 100%; height: 275px; background-size: cover; background-position: center; background-color: #333; }
+        
+        .card-info { padding: 1rem; }
+        .card-title { margin: 0; font-size: 1.1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 500; }
+        .card-tag { font-size: 0.8rem; color: #e50914; margin-top: 0.4rem; font-weight: bold; text-transform: uppercase; }
     </style>
 </head>
 <body>
@@ -61,46 +67,59 @@
                 <div class="hero-badge">Admin's Pick of the Week</div>
                 <h1 class="hero-title"><%= heroVideo.series_name ? heroVideo.series_name : heroVideo.title %></h1>
                 <% if (heroVideo.series_name) { %>
-                    <p style="font-size: 1.2rem; margin-bottom: 2rem;">Watch Season <%= heroVideo.season_number %>, Episode <%= heroVideo.episode_number %></p>
+                    <p style="font-size: 1.3rem; margin-bottom: 2rem; color: #ccc;">Play: Season <%= heroVideo.season_number %>, Episode <%= heroVideo.episode_number %></p>
                 <% } %>
-                <a href="/watch/<%= heroVideo.id %>" class="btn-play">▶ Play Now</a>
+                <a href="/watch/<%= heroVideo.id %>" class="btn-play"><span>▶</span>&nbsp; Play Now</a>
             </div>
         </div>
     <% } else { %>
-        <div class="hero" style="background-color: #141414; height: 20vh;"></div>
+        <div style="height: 10vh; background: #141414;"></div>
     <% } %>
 
     <div class="gallery-container">
-        <% if (movies.length > 0) { %>
+        
+        <% if (seriesList && seriesList.length > 0) { %>
             <div class="media-row">
-                <h3 class="row-title">Movies & Standalones</h3>
+                <h3 class="row-title">TV Series</h3>
                 <div class="row-slider">
-                    <% movies.forEach(movie => { %>
-                        <a href="/watch/<%= movie.id %>" class="media-card">
-                            <div class="card-img" style="<%= movie.thumbnail_path ? `background: url('/uploads/thumbnails/${movie.thumbnail_path}') no-repeat center/cover;` : 'background: #333;' %>"></div>
-                            <div class="card-info"><h4 class="card-title"><%= movie.title %></h4></div>
-                        </a>
-                    <% }) %>
-                </div>
-            </div>
-        <% } %>
-
-        <% for (const [seriesName, episodes] of Object.entries(seriesData)) { %>
-            <div class="media-row">
-                <h3 class="row-title"><%= seriesName %></h3>
-                <div class="row-slider">
-                    <% episodes.forEach(episode => { %>
-                        <a href="/watch/<%= episode.id %>" class="media-card">
-                            <div class="card-img" style="<%= episode.thumbnail_path ? `background: url('/uploads/thumbnails/${episode.thumbnail_path}') no-repeat center/cover;` : 'background: #333;' %>"></div>
+                    <% seriesList.forEach(series => { %>
+                        <a href="/series/<%= encodeURIComponent(series.series_name) %>" class="series-card">
+                            <div class="series-img" style="<%= series.series_poster ? `background-image: url('/uploads/thumbnails/${series.series_poster}');` : 'background: #333;' %>"></div>
                             <div class="card-info">
-                                <h4 class="card-title"><%= episode.title %></h4>
-                                <div class="card-meta">S<%= episode.season_number %>:E<%= episode.episode_number %></div>
+                                <h4 class="card-title"><%= series.series_name %></h4>
+                                <div class="card-tag">Series Hub</div>
                             </div>
                         </a>
                     <% }) %>
                 </div>
             </div>
         <% } %>
+
+        <% if (movies && movies.length > 0) { %>
+            <div class="media-row">
+                <h3 class="row-title">Movies & Specials</h3>
+                <div class="row-slider">
+                    <% movies.forEach(movie => { %>
+                        <a href="/watch/<%= movie.id %>" class="series-card">
+                            <% const posterToUse = movie.series_poster ? movie.series_poster : movie.thumbnail_path; %>
+                            <div class="series-img" style="<%= posterToUse ? `background-image: url('/uploads/thumbnails/${posterToUse}');` : 'background: #333;' %>"></div>
+                            <div class="card-info">
+                                <h4 class="card-title"><%= movie.title %></h4>
+                                <div class="card-tag">Standalone</div>
+                            </div>
+                        </a>
+                    <% }) %>
+                </div>
+            </div>
+        <% } %>
+
+        <% if ((!seriesList || seriesList.length === 0) && (!movies || movies.length === 0)) { %>
+            <div style="text-align: center; padding: 5rem 0; color: #666;">
+                <h2>No media available yet.</h2>
+            </div>
+        <% } %>
+
     </div>
+
 </body>
 </html>

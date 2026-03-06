@@ -28,11 +28,21 @@ const db = new sqlite3.Database(dbPath, (err) => {
         video_path TEXT NOT NULL,
         subtitle_path TEXT,
         thumbnail_path TEXT,
+        series_poster TEXT,
         is_recommended INTEGER DEFAULT 0,
         upload_date DATETIME DEFAULT CURRENT_TIMESTAMP
     )`);
 
-    // 3. Comments Table (Unchanged)
+    // 3. Users Table
+    db.run(`CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT UNIQUE NOT NULL,
+        password TEXT NOT NULL,
+        role TEXT DEFAULT 'user',
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )`);
+
+    // 4. Comments Table (Unchanged)
     db.run(`CREATE TABLE IF NOT EXISTS comments (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         video_id INTEGER NOT NULL,

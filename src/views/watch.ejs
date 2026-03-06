@@ -29,6 +29,17 @@
         .video-title { font-size: 2rem; margin: 0 0 0.5rem 0; color: #fff; }
         .series-context { font-size: 1.2rem; color: #4a90e2; margin-top: 0; margin-bottom: 1rem; }
         .upload-date { font-size: 0.9rem; color: #666; }
+
+        /* Download Button Styles */
+        .download-section { margin-top: 2rem; padding: 1.5rem; background: #1a1a1a; border-radius: 8px; border: 1px solid #333; }
+        .download-title { margin-top: 0; color: #e5e5e5; font-size: 1.2rem; margin-bottom: 1rem; }
+        .download-buttons { display: flex; gap: 1rem; flex-wrap: wrap; }
+        
+        .btn-download { background-color: #333; color: white; padding: 0.8rem 1.5rem; text-decoration: none; border-radius: 4px; font-weight: bold; transition: 0.2s; border: 1px solid #555; display: inline-flex; align-items: center; }
+        .btn-download:hover { background-color: #e50914; border-color: #e50914; }
+        
+        .btn-download-sub { background-color: transparent; color: #aaa; padding: 0.8rem 1.5rem; text-decoration: none; border-radius: 4px; font-weight: bold; transition: 0.2s; border: 1px solid #555; display: inline-flex; align-items: center; }
+        .btn-download-sub:hover { color: white; border-color: white; }
     </style>
 </head>
 <body>
@@ -51,10 +62,27 @@
             <video controls autoplay controlsList="nodownload">
                 <source src="/uploads/videos/<%= video.video_path %>" type="video/mp4">
                 <% if (video.subtitle_path) { %>
-                    <track label="English" kind="subtitles" srclang="en" src="/uploads/subtitles/<%= video.subtitle_path %>" default>
+                    <track label="עברית" kind="subtitles" srclang="he" src="/uploads/subtitles/<%= video.subtitle_path %>" default>
                 <% } %>
                 Your browser does not support the video tag.
             </video>
+        </div>
+        <div class="download-section">
+            <h3 class="download-title">Download Options</h3>
+            <div class="download-buttons">
+                <a href="/uploads/videos/<%= video.video_path %>" download="<%= video.title %>.mp4" class="btn-download">
+                    ⬇️ Download Video
+                </a>
+                
+                <% if (video.subtitle_path) { %>
+                    <a href="/uploads/subtitles/<%= video.subtitle_path %>" download="<%= video.title %>.vtt" class="btn-download-sub">
+                        📝 Download Subtitles
+                    </a>
+                <% } %>
+            </div>
+            <p style="font-size: 0.85rem; color: #888; margin-bottom: 0; margin-top: 1rem;">
+                <em>Tip: If watching offline with VLC Player, put both files in the same folder and give them the exact same name to load subtitles automatically.</em>
+            </p>
         </div>
 
         <div class="video-info">
@@ -64,6 +92,36 @@
             <% } %>
             <p class="upload-date">Uploaded on <%= new Date(video.upload_date).toLocaleDateString() %></p>
         </div>
+
+        <div class="video-info" style="margin-top: 2rem;">
+            <h3>Comments</h3>
+            
+            <form action="/watch/<%= video.id %>/comment" method="POST" style="margin-bottom: 2rem;">
+                <textarea name="comment_text" required placeholder="Write a comment..." 
+                        style="width: 100%; height: 80px; background: #141414; color: #fff; border: 1px solid #333; padding: 10px; border-radius: 5px; 
+                                font-family: 'Segoe UI', 'Heebo', sans-serif; font-size: 1rem; line-height: 1.5;"></textarea>
+                <button type="submit" class="btn" style="margin-top: 0.5rem; background: #e50914; border: none; padding: 0.5rem 1rem; color: #fff; border-radius: 5px; cursor: pointer;">Post Comment</button>
+            </form>
+
+            <% comments.forEach(comment => { %>
+                <div style="background: #141414; padding: 1rem; border-radius: 5px; margin-bottom: 1rem; position: relative;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                        <div>
+                            <div style="font-weight: bold; color: #4a90e2;"><%= comment.username %></div>
+                            <div style="margin-top: 0.5rem; font-family: 'Segoe UI', 'Heebo', sans-serif;"><%= comment.comment_text %></div>
+                        </div>
+
+                        <% if (user.userId === comment.user_id || user.role === 'admin') { %>
+                            <form action="/watch/<%= video.id %>/comment/<%= comment.id %>/delete" method="POST" onsubmit="return confirm('Delete this comment?');">
+                                <button type="submit" style="background: none; border: none; color: #666; cursor: pointer; font-size: 0.8rem;">Delete</button>
+                            </form>
+                        <% } %>
+                    </div>
+                    <div style="font-size: 0.7rem; color: #666; margin-top: 0.5rem;"><%= new Date(comment.timestamp).toLocaleString() %></div>
+                </div>
+            <% }) %>
+        </div>
+
     </div>
 
 </body>
