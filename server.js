@@ -20,7 +20,8 @@ app.set('views', path.join(__dirname, 'src', 'views'));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Expose the uploads folder so the browser can read videos, subtitles, and thumbnails
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+const uploadPath = process.env.UPLOAD_DIRECTORY || path.join(__dirname, 'uploads');
+app.use('/uploads', express.static(uploadPath));
 
 // Parse URL-encoded bodies (for our login form)
 app.use(express.urlencoded({ extended: true }));

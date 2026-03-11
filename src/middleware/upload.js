@@ -2,10 +2,13 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
-// 1. Ensure our upload directories actually exist
-const videoDir = path.join(__dirname, '../../uploads/videos');
-const subDir = path.join(__dirname, '../../uploads/subtitles');
-const thumbDir = path.join(__dirname, '../../uploads/thumbnails');
+// Read the base directory from the .env file (Adapts to PC or Surface Pro automatically!)
+const baseUploadDir = process.env.UPLOAD_DIRECTORY || path.join(__dirname, '../../uploads');
+
+// Build the specific folders based on that root directory
+const videoDir = path.join(baseUploadDir, 'videos');
+const subDir = path.join(baseUploadDir, 'subtitles');
+const thumbDir = path.join(baseUploadDir, 'thumbnails');
 
 if (!fs.existsSync(videoDir)) fs.mkdirSync(videoDir, { recursive: true });
 if (!fs.existsSync(subDir)) fs.mkdirSync(subDir, { recursive: true });
@@ -19,10 +22,10 @@ const storage = multer.diskStorage({
         } else if (file.fieldname === 'subtitle') {
             cb(null, subDir);
         } else if (file.fieldname === 'thumbnail' || file.fieldname === 'series_poster') {
-            // Both horizontal thumbnails and vertical posters live in the same folder
             cb(null, thumbDir);
         } else {
-            cb(new Error('Unexpected file field'), '../../uploads/');
+            // THE FIX: Now using the dynamic baseUploadDir instead of a hardcoded D: drive
+            cb(new Error('Unexpected file field'), baseUploadDir);
         }
     },
     filename: (req, file, cb) => {
@@ -46,7 +49,6 @@ const fileFilter = (req, file, cb) => {
             cb(new Error('Only .vtt format is allowed for subtitles!'), false);
         }
     } else if (file.fieldname === 'thumbnail' || file.fieldname === 'series_poster') {
-        // Accept standard image formats for our UI posters
         if (file.mimetype.startsWith('image/')) {
             cb(null, true);
         } else {
