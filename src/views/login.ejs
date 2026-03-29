@@ -4,6 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - KVALIM</title>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#141414">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/icon-192.png">
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(reg => console.log('Service worker registered!', reg))
+                    .catch(err => console.log('Service worker failed!', err));
+            });
+        }
+    </script>
     <style>
         body { margin: 0; background-color: #141414; color: white; display: flex; justify-content: center; align-items: center; height: 100vh; font-family: 'Segoe UI', 'Heebo', sans-serif; }
         .auth-container { background: rgba(0, 0, 0, 0.75); padding: 4rem; border-radius: 8px; width: 100%; max-width: 400px; box-sizing: border-box; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
@@ -31,9 +46,6 @@
             </div>
             <button type="submit" class="btn-submit">Sign In</button>
         </form>
-        <div class="auth-links">
-            New to KVALIM? <a href="/register">Sign up now.</a>
-        </div>
     </div>
 
 </body>
