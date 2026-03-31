@@ -1,4 +1,6 @@
 const db = require('../config/db');
+const fs = require('fs');
+const path = require('path');
 
 exports.getGallery = (req, res) => {
     db.all(`SELECT * FROM videos ORDER BY upload_date DESC`, [], (err, videos) => {
@@ -107,4 +109,47 @@ exports.deleteComment = (req, res) => {
             res.status(403).send("You don't have permission to delete this.");
         }
     });
+};
+
+// NEW: High-Speed Video Streaming Route
+exports.streamVideo = (req, res) => {
+    const filename = req.params.filename;
+    // Map exactly to where your videos are saved
+    const videoPath = path.join(__dirname, '../../uploads/videos', filename);
+
+    if (!fs.existsSync(videoPath)) {
+        return res.status(404).send('Video file not found on server.');
+    }
+
+    const videoStat = fs.statSync(videoPath);
+    const fileSize = videoStat.size;
+    const videoRange = req.headers.range;
+
+    if (videoRange) {
+        // Parse the exact bytes the phone is asking for
+        const parts = videoRange.replace(/bytes=/, "").split("-");
+        const start = parseInt(parts[0], 10);
+        
+        // Grab exactly what they asked for, OR a 1MB chunk (10 ** 6 bytes)
+        const end = parts[1] ? parseInt(parts[1], 10) : Math.min(start + (10 ** 6), fileSize - 1);
+        const chunksize = (end - start) + 1;
+
+        const file = fs.createReadStream(videoPath, { start, end });
+        const head = {
+            'Content-Range': `bytes ${start}-${end}/${fileSize}`,
+            'Accept-Ranges': 'bytes',
+            'Content-Length': chunksize,
+            'Content-Type': 'video/mp4', 
+        };
+
+        res.writeHead(206, head); // 206 = Partial Content (Chunk)
+        file.pipe(res);
+    } else {
+        const head = {
+            'Content-Length': fileSize,
+            'Content-Type': 'video/mp4',
+        };
+        res.writeHead(200, head);
+        fs.createReadStream(videoPath).pipe(res);
+    }
 };

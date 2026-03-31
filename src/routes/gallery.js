@@ -6,6 +6,9 @@ const requireAuth = require('../middleware/requireAuth');
 // The main gallery page
 router.get('/gallery', requireAuth, galleryController.getGallery);
 
+// The high-speed video streaming route
+router.get('/play/:filename', requireAuth, galleryController.streamVideo);
+
 // The video player page (Protected by requireAuth so friends can watch too)
 router.get('/watch/:id', requireAuth, galleryController.getWatchPage);
 
