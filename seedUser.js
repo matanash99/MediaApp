@@ -26,5 +26,5 @@ async function createAccount(username, plainTextPassword) {
 }
 
 // ---- ADD YOUR FRIENDS HERE ----
-// Change these values, save the file, and run it in the terminal
-createAccount('roni', 'ronirogani1!');
+// Change these values, save the file, and run node seedUser.js in the terminal
+createAccount('omri', '0549849991');
