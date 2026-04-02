@@ -1,0 +1,4 @@
+1) Convert mkv to mp4 (recursive for all dir+subdirs)
+2) Convert srt to vtt (recursive for all dir+subdirs)
+3) Fix moov atom for every mp4 (moves Metadata to first byte to start stream quickly)
+4) Generate thumbnails (generate_thumbs.py creates screenshot with same name as mp4 files in dir+subdirs)
